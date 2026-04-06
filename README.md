@@ -33,7 +33,10 @@ Biubo WAF monitors every packet. From complex obfuscated payloads to sudden anom
 ### 2. 🎥 Visual Forensics (The "DVR" for Security)
 Stop guessing. Watch exactly what the attacker did on your site with our integrated `rrweb` session playback.
 > **![Visual Replay Demo](assets/GIF_02_RRWEB_REPLAY.gif)**
-> *Recording Idea: Hacker types on a form -> Gets blocked -> Admin opens Dashboard -> Clicks "Play" -> Watch the "video" of the hacker's mouse moves and typing.*
+
+### 🗺️ 3. Real-time Attack Visualization
+Stay ahead of the threat. Visualize every incoming attack on a live global map, providing instant situational awareness.
+> **![Global Attack Map](assets/GIF_03_ATTACK_MAP.gif)**
 
 ---
 
