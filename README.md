@@ -85,6 +85,11 @@ python setup.py
 python main.py
 ```
 
+### Docker Deployment
+```bash
+docker run zplb/biubo:1.1.0
+```
+
 ---
 
 ## 📑 Documentation Links
