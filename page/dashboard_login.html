@@ -28,7 +28,8 @@
 <div class="box">
   <div style="position:absolute;top:16px;right:16px">
     <select id="lang-sel" onchange="changeLang(this.value)" style="background:rgba(0,100,180,0.1);border:1px solid var(--border);color:var(--dim);padding:4px 8px;border-radius:4px;outline:none;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:12px;">
-      <option value="zh">中文</option>
+      <option value="zh-TW">繁體中文</option>
+      <option value="zh">简体中文</option>
       <option value="en">English</option>
     </select>
   </div>
@@ -37,13 +38,22 @@
     <h1 id="t-h1">Biubo WAF</h1>
   </div>
   <label id="t-label">管理员密码</label>
-  <input type="password" id="pwd" placeholder="输入密码" autofocus onkeydown="if(event.key==='Enter')login()">
+  <input type="password" id="pwd" placeholder="輸入密碼" autofocus onkeydown="if(event.key==='Enter')login()">
   <div class="err" id="err"></div>
-  <button id="btn" onclick="login()">进入控制台</button>
+  <button id="btn" onclick="login()">進入控制臺</button>
 </div>
 <script>
 const I18N = {
-  zh: {
+  'zh-TW': {
+    title: 'Biubo WAF · 登入',
+    adminPwd: '管理員密碼',
+    pwdPlaceholder: '輸入密碼',
+    btnEnter: '進入控制檯',
+    errEmpty: '請輸入密碼',
+    errWrong: '密碼不正確',
+    errNet: '網路錯誤，請重試'
+  },
+  'zh': {
     title: 'Biubo WAF · 登录',
     adminPwd: '管理员密码',
     pwdPlaceholder: '输入密码',
@@ -62,8 +72,8 @@ const I18N = {
     errNet: 'Network error, please try again'
   }
 };
-let curLang = localStorage.getItem('biubo_lang') || 'zh';
-if (curLang !== 'zh' && curLang !== 'en') curLang = 'zh';
+let curLang = localStorage.getItem('biubo_lang') || 'zh-TW';
+if (curLang !== 'zh-TW' && curLang !== 'zh' && curLang !== 'en') curLang = 'zh-TW';
 
 function changeLang(lang) {
   curLang = lang;

@@ -32,11 +32,29 @@ _captcha_lock = threading.Lock()
 
 # Load static templates and error pages
 def _load_asset(filename, fallback=""):
+    # Prevent path traversal by validating filename
+    if ".." in filename or "/" in filename or "\\" in filename:
+        logger.error(f"Invalid asset filename: {filename}")
+        return fallback
+    
     path = os.path.join(settings.PAGE_ROOT, filename)
+    
+    # Ensure path is within PAGE_ROOT
+    try:
+        real_path = os.path.realpath(path)
+        real_root = os.path.realpath(settings.PAGE_ROOT)
+        if not real_path.startswith(real_root):
+            logger.error(f"Asset path outside root: {filename}")
+            return fallback
+    except Exception as e:
+        logger.error(f"Error validating asset path: {e}")
+        return fallback
+    
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return f.read()
-    except Exception:
+    except Exception as e:
+        logger.error(f"Error loading asset {filename}: {e}")
         return fallback
 
 PAGE_400  = _load_asset("400.html", "<h1>400 Bad Request (Blocked by WAF)</h1>")
@@ -51,7 +69,14 @@ PAGE_LOADING = _load_asset("loading.html", "<h1>Security Loading</h1>")
 def _normalize_path(path: str) -> str:
     """Normalize path to prevent bypasses (e.g., directory traversal)."""
     decoded = unquote(path)
+    # Remove null bytes to prevent null byte injection
+    decoded = decoded.replace('\x00', '')
+    # Normalize the path
     normalized = os.path.normpath("/" + decoded).replace("\\", "/")
+    # Check for path traversal attempts
+    if ".." in normalized or normalized.startswith("/../"):
+        logger.warning(f"Path traversal attempt detected: {path}")
+        return "/"
     return normalized
 
 @proxy_bp.route("/", defaults={"path": ""}, methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])

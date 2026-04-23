@@ -10,7 +10,8 @@ class Settings:
     # Base Configuration
     # ══════════════════════════════════════════════════════════════════════════════
     WAF_PORT: int = int(os.getenv("WAF_PORT", "80"))
-    DASHBOARD_PASSWORD: str = os.getenv("WAF_DASHBOARD_PASSWORD", "admin123")
+    DASHBOARD_PASSWORD_HASH: str = os.getenv("WAF_DASHBOARD_PASSWORD_HASH", "")
+    DASHBOARD_PASSWORD: str = os.getenv("WAF_DASHBOARD_PASSWORD", "")  # Deprecated, kept for backward compatibility
     CORS_ORIGINS: List[str] = json.loads(os.getenv("WAF_CORS_ORIGINS", '["http://ip.zplb.org.cn:7000"]'))
 
     HOST_FORWARD: bool = False
