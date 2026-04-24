@@ -82,6 +82,8 @@ class Settings:
     }
 
     DASHBOARD_PATH: str = os.getenv("WAF_DASHBOARD_PATH", "/biubo-cgi")
+    # Session secret used by Flask sessions. Prefer env var, fallback to generated value.
+    SESSION_SECRET: str = os.getenv("WAF_SESSION_SECRET", secrets.token_hex(32))
 
     # ══════════════════════════════════════════════════════════════════════════════
     # Log Management Configuration
@@ -105,6 +107,7 @@ class Settings:
             "DASHBOARD_PASSWORD": self.DASHBOARD_PASSWORD,
             "CORS_ORIGINS": self.CORS_ORIGINS,
             "PROXY_MAP": self.PROXY_MAP,
+            "SESSION_SECRET": self.SESSION_SECRET,
             "DASHBOARD_PATH": self.DASHBOARD_PATH,
             "API_KEY": self.API_KEY,
             "LLM_MODEL": self.LLM_MODEL,

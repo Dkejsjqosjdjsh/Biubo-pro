@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify, Response, session, redirect, url_for, send_from_directory
 from src.config.settings import settings
 from src.utils.security import PasswordHasher, CSRFToken, PasswordValidator
+from src.utils.i18n import t
 
 logger = logging.getLogger("WAF.Dashboard")
 
@@ -60,7 +61,7 @@ def login_required(f):
             is_page = request.path.endswith(".html") or request.path.endswith("/dashboard") or request.path.endswith("/init")
             if is_page and "/api/" not in request.path and "/info/" not in request.path:
                 return redirect(settings.DASHBOARD_PATH + "/dashboard/login")
-            return jsonify({"status": "error", "msg": "Unauthorized"}), 401
+            return jsonify({"status": "error", "msg": t('unauthorized', 'Unauthorized')}), 401
         return f(*args, **kwargs)
     return decorated
 
@@ -120,7 +121,7 @@ def api_login():
         logger.warning(f"Login attempt from locked IP {client_ip}")
         return jsonify({
             "status": "error", 
-            "msg": f"登入次數過多，請在 {remaining_time} 秒後重試"
+            "msg": t('login_locked', f"登入次數過多，請在 {remaining_time} 秒後重試")
         }), 429
     
     # CSRF validation
@@ -128,14 +129,14 @@ def api_login():
     if not csrf_token or csrf_token != session.get('csrf_token'):
         logger.warning(f"CSRF validation failed for login from {client_ip}")
         _record_login_attempt(client_ip)
-        return jsonify({"status": "error", "msg": "安全驗證失敗"}), 403
+        return jsonify({"status": "error", "msg": t('csrf_failed', 'CSRF validation failed')}), 403
     
     data = request.get_json(silent=True) or {}
     password = data.get("password", "")
     
     if not password:
         _record_login_attempt(client_ip)
-        return jsonify({"status": "error", "msg": "請輸入密碼"}), 400
+        return jsonify({"status": "error", "msg": t('enter_password', 'Please enter a password')}), 400
     
     # Get stored password hash
     stored_hash = DASHBOARD_PASSWORD_HASH or settings.DASHBOARD_PASSWORD_HASH
@@ -151,11 +152,11 @@ def api_login():
             return jsonify({
                 "status": "success",
                 "force_password_change": True,
-                "msg": "請立即更改密碼"
+                "msg": t('default_password_change', 'Please change the default password')
             })
         else:
             _record_login_attempt(client_ip)
-            return jsonify({"status": "error", "msg": "密碼不正確"}), 401
+            return jsonify({"status": "error", "msg": t('password_incorrect', 'Incorrect password')}), 401
     
     # Verify password hash
     if PasswordHasher.verify_password(password, stored_hash):
@@ -188,10 +189,10 @@ def change_password():
     
     # Validate input
     if not old_password or not new_password:
-        return jsonify({"status": "error", "msg": "請輸入所有必填字段"}), 400
+        return jsonify({"status": "error", "msg": t('enter_all_fields', 'Please enter all required fields')}), 400
     
     if new_password != confirm_password:
-        return jsonify({"status": "error", "msg": "新密碼不符"}), 400
+        return jsonify({"status": "error", "msg": t('new_password_mismatch', 'New password does not match')}), 400
     
     # Check password strength
     is_valid, msg = PasswordValidator.validate(new_password)
@@ -201,7 +202,7 @@ def change_password():
     # Verify old password
     stored_hash = DASHBOARD_PASSWORD_HASH or settings.DASHBOARD_PASSWORD_HASH
     if stored_hash and not PasswordHasher.verify_password(old_password, stored_hash):
-        return jsonify({"status": "error", "msg": "舊密碼不正確"}), 401
+        return jsonify({"status": "error", "msg": t('password_incorrect', 'Old password incorrect')}), 401
     
     # Update password
     new_hash = PasswordHasher.hash_password(new_password)
@@ -213,7 +214,7 @@ def change_password():
     session['csrf_token'] = CSRFToken.generate_token()
     
     logger.info(f"Dashboard password changed by {request.remote_addr}")
-    return jsonify({"status": "success", "msg": "密碼已成功更改"})
+    return jsonify({"status": "success", "msg": t('password_changed', 'Password changed successfully')})
 
 # ── Config API ───────────────────────────────────────────────
 @dashboard_bp.route("/api/biubo/config", methods=["GET"])
@@ -244,7 +245,7 @@ def update_config():
         if "WAF_PORT" in data:
             port = int(data["WAF_PORT"])
             if not (1 <= port <= 65535):
-                return jsonify({"status": "error", "msg": "無效的端口號"}), 400
+                return jsonify({"status": "error", "msg": t('invalid_port', 'Invalid port number')}), 400
             settings.WAF_PORT = port
         
         if "DASHBOARD_PASSWORD" in data and data["DASHBOARD_PASSWORD"]:
@@ -262,7 +263,7 @@ def update_config():
         
         if "PROXY_MAP" in data:
             if not isinstance(data["PROXY_MAP"], dict):
-                return jsonify({"status": "error", "msg": "無效的代理映射"}), 400
+                return jsonify({"status": "error", "msg": t('invalid_proxy_map', 'Invalid proxy mapping')}), 400
             settings.PROXY_MAP = data["PROXY_MAP"]
         
         if "LLM_MODEL" in data:
@@ -271,7 +272,7 @@ def update_config():
         if "LLM_BASE_URL" in data:
             url = data["LLM_BASE_URL"]
             if not (url.startswith("http://") or url.startswith("https://")):
-                return jsonify({"status": "error", "msg": "無效的 URL"}), 400
+                return jsonify({"status": "error", "msg": t('invalid_url', 'Invalid URL')}), 400
             settings.LLM_BASE_URL = url
         
         # Note: API_KEY updates should never be exposed via GET/POST without authentication
@@ -281,7 +282,7 @@ def update_config():
         settings.save_config()
         session['csrf_token'] = CSRFToken.generate_token()
         logger.info(f"Configuration updated by {request.remote_addr}")
-        return jsonify({"status": "success", "msg": "配置已更新"})
+        return jsonify({"status": "success", "msg": t('config_updated', 'Configuration updated')})
     
     except ValueError as e:
         return jsonify({"status": "error", "msg": f"無效的值: {str(e)}"}), 400

@@ -1,0 +1,17 @@
+{
+    "unauthorized": "未經授權",
+    "login_locked": "登入次數過多，請稍後重試",
+    "csrf_failed": "安全驗證失敗",
+    "enter_password": "請輸入密碼",
+    "default_password_change": "請立即更改密碼",
+    "password_incorrect": "密碼不正確",
+    "enter_all_fields": "請輸入所有必填字段",
+    "new_password_mismatch": "新密碼不符",
+    "password_changed": "密碼已成功更改",
+    "invalid_port": "無效的端口號",
+    "invalid_proxy_map": "無效的代理映射",
+    "invalid_url": "無效的 URL",
+    "config_updated": "配置已更新",
+    "missing_login_page": "登錄頁面遺失",
+    "missing_dashboard_page": "儀表板頁面遺失"
+}
