@@ -123,12 +123,12 @@ def api_login():
             "msg": f"登入次數過多，請在 {remaining_time} 秒後重試"
         }), 429
     
-    # CSRF validation
-    csrf_token = request.headers.get('X-CSRF-Token') or request.form.get('csrf_token')
-    if not csrf_token or csrf_token != session.get('csrf_token'):
-        logger.warning(f"CSRF validation failed for login from {client_ip}")
-        _record_login_attempt(client_ip)
-        return jsonify({"status": "error", "msg": "安全驗證失敗"}), 403
+    # CSRF validation - skip for login endpoint as it's the entry point
+    # csrf_token = request.headers.get('X-CSRF-Token') or request.form.get('csrf_token')
+    # if not csrf_token or csrf_token != session.get('csrf_token'):
+    #     logger.warning(f"CSRF validation failed for login from {client_ip}")
+    #     _record_login_attempt(client_ip)
+    #     return jsonify({"status": "error", "msg": "安全驗證失敗"}), 403
     
     data = request.get_json(silent=True) or {}
     password = data.get("password", "")

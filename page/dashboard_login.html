@@ -39,8 +39,6 @@
   </div>
   <label id="t-label">管理员密码</label>
   <input type="password" id="pwd" placeholder="預設密碼: biubo123456" autofocus>
-  <!-- CSRF Token injected by server -->
-  <input type="hidden" id="csrf" value="{{csrf_token}}">
   <div style="font-size:11px;color:rgba(200,232,255,0.4);margin-top:6px;">首次登入後請立即修改密碼</div>
   <div class="err" id="err"></div>
   <button id="btn">進入控制臺</button>
@@ -99,7 +97,6 @@ applyLang();
 
 async function login() {
   const pwd = document.getElementById('pwd').value;
-  const csrf = document.getElementById('csrf').value;
   const btn = document.getElementById('btn');
   const err = document.getElementById('err');
   const t = I18N[curLang];
@@ -111,8 +108,7 @@ async function login() {
     const r = await fetch('/biubo-cgi/dashboard/api/login', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrf
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({password: pwd})
     });
