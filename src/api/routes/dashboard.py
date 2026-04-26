@@ -342,7 +342,6 @@ def get_config():
 
 @dashboard_bp.route("/api/biubo/config", methods=["POST"])
 @login_required
-@csrf_required
 def update_config():
     """Update WAF configuration with validation."""
     data = request.get_json(silent=True) or {}
