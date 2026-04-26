@@ -140,9 +140,9 @@ def api_login():
     # Get stored password hash
     stored_hash = DASHBOARD_PASSWORD_HASH or settings.DASHBOARD_PASSWORD_HASH
     
-    # If no hash exists (first login), use default but require change
+    # If no hash exists (first login), use default password from settings
     if not stored_hash:
-        if password == "admin123":
+        if password == settings.DEFAULT_PASSWORD:
             logger.warning("Default password used for login - user must change it")
             session["dashboard_authed"] = True
             session["force_password_change"] = True
@@ -151,19 +151,32 @@ def api_login():
             return jsonify({
                 "status": "success",
                 "force_password_change": True,
-                "msg": "請立即更改密碼"
+                "msg": "首次登入，請立即更改密碼"
             })
         else:
             _record_login_attempt(client_ip)
             return jsonify({"status": "error", "msg": "密碼不正確"}), 401
     
+    # Check if password change is forced (based on settings)
+    force_change = settings.FORCE_PASSWORD_CHANGE and not stored_hash
+    
     # Verify password hash
     if PasswordHasher.verify_password(password, stored_hash):
         session["dashboard_authed"] = True
-        session.pop("force_password_change", None)
         session['csrf_token'] = CSRFToken.generate_token()
         _reset_login_attempts(client_ip)
         logger.info(f"Successful login from {client_ip}")
+        
+        # Check if password change is still required
+        if settings.FORCE_PASSWORD_CHANGE and not stored_hash:
+            session["force_password_change"] = True
+            return jsonify({
+                "status": "success",
+                "force_password_change": True,
+                "msg": "請立即更改密碼"
+            })
+        
+        session.pop("force_password_change", None)
         return jsonify({"status": "success"})
     
     _record_login_attempt(client_ip)
@@ -198,14 +211,22 @@ def change_password():
     if not is_valid:
         return jsonify({"status": "error", "msg": msg}), 400
     
-    # Verify old password
+    # Verify old password (use default password if no hash exists)
     stored_hash = DASHBOARD_PASSWORD_HASH or settings.DASHBOARD_PASSWORD_HASH
-    if stored_hash and not PasswordHasher.verify_password(old_password, stored_hash):
-        return jsonify({"status": "error", "msg": "舊密碼不正確"}), 401
+    if stored_hash:
+        # Existing password - verify normally
+        if not PasswordHasher.verify_password(old_password, stored_hash):
+            return jsonify({"status": "error", "msg": "舊密碼不正確"}), 401
+    else:
+        # No hash yet - verify against default password
+        if old_password != settings.DEFAULT_PASSWORD:
+            return jsonify({"status": "error", "msg": "默認密碼不正確"}), 401
     
     # Update password
     new_hash = PasswordHasher.hash_password(new_password)
     settings.DASHBOARD_PASSWORD_HASH = new_hash
+    settings.DASHBOARD_PASSWORD = ""  # Clear plain text password
+    settings.FORCE_PASSWORD_CHANGE = False  # Mark as password changed
     settings.save_config()
     
     # Clear forced password change flag

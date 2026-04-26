@@ -38,7 +38,8 @@
     <h1 id="t-h1">Biubo WAF</h1>
   </div>
   <label id="t-label">管理员密码</label>
-  <input type="password" id="pwd" placeholder="輸入密碼" autofocus onkeydown="if(event.key==='Enter')login()">
+  <input type="password" id="pwd" placeholder="預設密碼: biubo123456" autofocus onkeydown="if(event.key==='Enter')login()">
+  <div style="font-size:11px;color:rgba(200,232,255,0.4);margin-top:6px;">首次登入後請立即修改密碼</div>
   <div class="err" id="err"></div>
   <button id="btn" onclick="login()">進入控制臺</button>
 </div>

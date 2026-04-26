@@ -12,6 +12,12 @@ class Settings:
     WAF_PORT: int = int(os.getenv("WAF_PORT", "80"))
     DASHBOARD_PASSWORD_HASH: str = os.getenv("WAF_DASHBOARD_PASSWORD_HASH", "")
     DASHBOARD_PASSWORD: str = os.getenv("WAF_DASHBOARD_PASSWORD", "")  # Deprecated, kept for backward compatibility
+    
+    # ══════════════════════════════════════════════════════════════════════════════
+    # Default Password Configuration (For first-time login)
+    # ══════════════════════════════════════════════════════════════════════════════
+    DEFAULT_PASSWORD: str = os.getenv("WAF_DEFAULT_PASSWORD", "biubo123456")  # Default password for initial login
+    FORCE_PASSWORD_CHANGE: bool = os.getenv("WAF_FORCE_PASSWORD_CHANGE", "true").lower() == "true"  # Force password change on first login
     CORS_ORIGINS: List[str] = json.loads(os.getenv("WAF_CORS_ORIGINS", '["http://ip.zplb.org.cn:7000"]'))
 
     HOST_FORWARD: bool = False
@@ -114,7 +120,8 @@ class Settings:
             "API_KEY": self.API_KEY,
             "LLM_MODEL": self.LLM_MODEL,
             "LLM_BASE_URL": self.LLM_BASE_URL,
-            "UI_LANGUAGE": self.UI_LANGUAGE
+            "UI_LANGUAGE": self.UI_LANGUAGE,
+            "FORCE_PASSWORD_CHANGE": self.FORCE_PASSWORD_CHANGE
         }
         try:
             with open(config_path, 'w', encoding='utf-8') as f:
