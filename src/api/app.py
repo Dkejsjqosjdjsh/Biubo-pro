@@ -22,8 +22,8 @@ def create_app() -> Flask:
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
-            "img-src 'self' data:; "
-            "connect-src 'self'; "
+            "img-src 'self' data: https://unpkg.com; "
+            "connect-src 'self' https://cdn.jsdelivr.net; "
             "font-src https://fonts.gstatic.com; "
             "object-src 'none';"
         )
