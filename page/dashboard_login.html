@@ -110,6 +110,16 @@
   .hidden {
     display: none !important;
   }
+  .adblock-warning {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 5px;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 </style>
 </head>
 <body>
@@ -117,6 +127,7 @@
   <div class="header">
     <h1>Biubo WAF</h1>
     <p>Web Application Firewall</p>
+    <div class="adblock-warning">⚠️ 如果無法登入，請先關閉廣告攔截器</div>
   </div>
 
   <!-- Login Section -->

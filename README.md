@@ -16,6 +16,8 @@
 
 ## ⚡ What is Biubo WAF?
 
+**Biubo WAF** 是一個智能 Web 應用程式防火牆，結合了正則表達式的高性能和 LLM 的語義理解能力。它作為您應用程式的守護者，通過雙重鏡頭監控每個請求：**正則表達式性能**和 **LLM 感知**。
+
 **Biubo WAF** is not just another rule-based filter. It is an **Intelligence-First Proxy** that bridges the gap between high-speed security and modern AI intuition. It sits as a guardian in front of your applications, watching every request through a dual lens of **Regex Performance** and **LLM Awareness**.
 
 > [!TIP]
