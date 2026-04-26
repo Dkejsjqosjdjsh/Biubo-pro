@@ -3,156 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Biubo WAF · 登录</title>
+<title>Biubo WAF Login</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--bg:#020b18;--border:rgba(0,200,255,0.18);--accent:#00c8ff;--red:#ff3a3a;--text:#c8e8ff;--glow:0 0 18px rgba(0,200,255,0.35)}
-  body{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;color:var(--text)}
-  body::after{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)}
-  .box{background:rgba(2,15,35,0.92);border:1px solid var(--border);border-radius:10px;padding:40px 44px;width:400px;position:relative;backdrop-filter:blur(16px)}
-  .box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
-  .logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center}
-  .logo-icon{width:36px;height:36px;border:1.5px solid var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;box-shadow:var(--glow);font-size:18px}
-  h1{font-size:18px;font-weight:700;letter-spacing:3px;text-transform:uppercase}
-  label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(200,232,255,0.5);margin-bottom:8px}
-  input{width:100%;background:rgba(0,100,180,0.1);border:1px solid rgba(0,200,255,0.2);border-radius:5px;padding:11px 14px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:8px}
-  input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,200,255,0.1)}
-  .err{color:var(--red);font-size:12px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
-  .success{color:#00ff88;font-size:12px;margin-top:8px;min-height:18px;font-family:'Share Tech Mono',monospace}
-  button{margin-top:16px;width:100%;padding:12px;background:rgba(0,200,255,0.12);border:1px solid var(--accent);border-radius:5px;color:var(--accent);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
-  button:hover{background:rgba(0,200,255,0.22);box-shadow:var(--glow)}
-  button:disabled{opacity:.5;cursor:not-allowed}
-  .hidden{display:none}
-  .hint{font-size:11px;color:rgba(200,232,255,0.4);margin-bottom:8px}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0e1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+  .container {
+    background: #121826;
+    border: 1px solid #1e2a3d;
+    border-radius: 12px;
+    padding: 48px;
+    width: 420px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    color: #e2e8f0;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: #64748b;
+    font-size: 14px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #0f1623;
+    border: 1px solid #1e2a3d;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .form-group input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  .form-group input::placeholder {
+    color: #475569;
+  }
+  .hint {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+  .message {
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 20px;
+    display: none;
+  }
+  .message.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    display: block;
+  }
+  .message.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    display: block;
+  }
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover {
+    background: #2563eb;
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .hidden {
+    display: none !important;
+  }
 </style>
 </head>
 <body>
-<div class="box">
-  <div class="logo">
-    <div class="logo-icon">⬡</div>
+<div class="container">
+  <div class="header">
     <h1>Biubo WAF</h1>
+    <p>Web Application Firewall</p>
   </div>
 
-  <!-- Login Form -->
-  <div id="login-form">
-    <label>管理員密碼</label>
-    <input type="password" id="pwd" placeholder="預設密碼: biubo123456" autofocus>
-    <div class="hint">首次登入後請立即修改密碼</div>
-    <div class="err" id="err"></div>
-    <button id="btn-login">進入控制臺</button>
+  <!-- Login Section -->
+  <div id="login-section">
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter password" autofocus>
+      <div class="hint">Default: biubo123456</div>
+    </div>
+    <div class="message" id="login-message"></div>
+    <button class="btn" id="login-btn">Login</button>
   </div>
 
-  <!-- Change Password Form (hidden by default) -->
-  <div id="change-pwd-form" class="hidden">
-    <label>舊密碼</label>
-    <input type="password" id="old-pwd" placeholder="輸入舊密碼">
-    <label>新密碼</label>
-    <input type="password" id="new-pwd" placeholder="至少 8 位">
-    <label>確認新密碼</label>
-    <input type="password" id="confirm-pwd" placeholder="再次輸入新密碼">
-    <div class="err" id="pwd-err"></div>
-    <div class="success" id="pwd-success"></div>
-    <button id="btn-change">修改密碼</button>
+  <!-- Password Change Section -->
+  <div id="password-section" class="hidden">
+    <div class="form-group">
+      <label for="old-password">Current Password</label>
+      <input type="password" id="old-password" placeholder="Enter current password">
+    </div>
+    <div class="form-group">
+      <label for="new-password">New Password</label>
+      <input type="password" id="new-password" placeholder="At least 8 characters">
+    </div>
+    <div class="form-group">
+      <label for="confirm-password">Confirm New Password</label>
+      <input type="password" id="confirm-password" placeholder="Confirm new password">
+    </div>
+    <div class="message" id="password-message"></div>
+    <button class="btn" id="change-password-btn">Change Password</button>
   </div>
 </div>
 <script>
-async function login() {
-  const pwd = document.getElementById('pwd').value;
-  const btn = document.getElementById('btn-login');
-  const err = document.getElementById('err');
+const loginSection = document.getElementById('login-section');
+const passwordSection = document.getElementById('password-section');
+const loginMessage = document.getElementById('login-message');
+const passwordMessage = document.getElementById('password-message');
+
+function showMessage(element, text, type) {
+  element.textContent = text;
+  element.className = 'message ' + type;
+}
+
+function clearMessage(element) {
+  element.textContent = '';
+  element.className = 'message';
+}
+
+async function handleLogin() {
+  const password = document.getElementById('password').value;
+  const loginBtn = document.getElementById('login-btn');
   
-  if (!pwd) { err.textContent = '請輸入密碼'; return; }
-  btn.disabled = true;
-  err.textContent = '';
+  if (!password) {
+    showMessage(loginMessage, 'Please enter password', 'error');
+    return;
+  }
+  
+  clearMessage(loginMessage);
+  loginBtn.disabled = true;
   
   try {
-    const r = await fetch('/biubo-cgi/dashboard/api/login', {
+    const response = await fetch('/biubo-cgi/dashboard/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({password: pwd})
+      body: JSON.stringify({ password })
     });
-    const d = await r.json();
+    const data = await response.json();
     
-    if (d.status === 'success') {
-      if (d.force_password_change) {
-        // Show password change form
-        document.getElementById('login-form').classList.add('hidden');
-        document.getElementById('change-pwd-form').classList.remove('hidden');
-        document.getElementById('old-pwd').value = pwd;
-        document.getElementById('old-pwd').focus();
+    if (data.status === 'success') {
+      if (data.force_password_change) {
+        loginSection.classList.add('hidden');
+        passwordSection.classList.remove('hidden');
+        document.getElementById('old-password').value = password;
+        document.getElementById('old-password').focus();
       } else {
         window.location.href = '/biubo-cgi/dashboard';
       }
     } else {
-      err.textContent = d.msg || '密碼不正確';
-      btn.disabled = false;
+      showMessage(loginMessage, data.msg || 'Invalid password', 'error');
+      loginBtn.disabled = false;
     }
-  } catch(e) {
-    err.textContent = '網路錯誤';
-    btn.disabled = false;
+  } catch (error) {
+    showMessage(loginMessage, 'Network error, please try again', 'error');
+    loginBtn.disabled = false;
   }
 }
 
-async function changePassword() {
-  const oldPwd = document.getElementById('old-pwd').value;
-  const newPwd = document.getElementById('new-pwd').value;
-  const confirmPwd = document.getElementById('confirm-pwd').value;
-  const btn = document.getElementById('btn-change');
-  const err = document.getElementById('pwd-err');
-  const success = document.getElementById('pwd-success');
+async function handleChangePassword() {
+  const oldPassword = document.getElementById('old-password').value;
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+  const changeBtn = document.getElementById('change-password-btn');
   
-  if (!oldPwd || !newPwd) {
-    err.textContent = '請輸入所有必填字段';
-    return;
-  }
-  if (newPwd !== confirmPwd) {
-    err.textContent = '新密碼不符';
-    return;
-  }
-  if (newPwd.length < 8) {
-    err.textContent = '密碼長度至少 8 位';
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    showMessage(passwordMessage, 'Please fill all fields', 'error');
     return;
   }
   
-  btn.disabled = true;
-  err.textContent = '';
-  success.textContent = '';
+  if (newPassword !== confirmPassword) {
+    showMessage(passwordMessage, 'Passwords do not match', 'error');
+    return;
+  }
+  
+  if (newPassword.length < 8) {
+    showMessage(passwordMessage, 'Password must be at least 8 characters', 'error');
+    return;
+  }
+  
+  clearMessage(passwordMessage);
+  changeBtn.disabled = true;
   
   try {
-    const r = await fetch('/biubo-cgi/dashboard/api/change-password', {
+    const response = await fetch('/biubo-cgi/dashboard/api/change-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        old_password: oldPwd,
-        new_password: newPwd,
-        confirm_password: confirmPwd
+        old_password: oldPassword,
+        new_password: newPassword,
+        confirm_password: confirmPassword
       })
     });
-    const d = await r.json();
+    const data = await response.json();
     
-    if (d.status === 'success') {
-      success.textContent = '密碼已成功更改，正在跳轉...';
+    if (data.status === 'success') {
+      showMessage(passwordMessage, 'Password changed successfully! Redirecting...', 'success');
       setTimeout(() => {
         window.location.href = '/biubo-cgi/dashboard';
-      }, 1000);
+      }, 1500);
     } else {
-      err.textContent = d.msg || '密碼更改失敗';
-      btn.disabled = false;
+      showMessage(passwordMessage, data.msg || 'Failed to change password', 'error');
+      changeBtn.disabled = false;
     }
-  } catch(e) {
-    err.textContent = '網路錯誤';
-    btn.disabled = false;
+  } catch (error) {
+    showMessage(passwordMessage, 'Network error, please try again', 'error');
+    changeBtn.disabled = false;
   }
 }
 
-document.getElementById('btn-login').addEventListener('click', login);
-document.getElementById('pwd').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') login();
+document.getElementById('login-btn').addEventListener('click', handleLogin);
+document.getElementById('password').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') handleLogin();
 });
-document.getElementById('btn-change').addEventListener('click', changePassword);
-document.getElementById('confirm-pwd').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') changePassword();
+
+document.getElementById('change-password-btn').addEventListener('click', handleChangePassword);
+document.getElementById('confirm-password').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') handleChangePassword();
 });
 </script>
 </body>
